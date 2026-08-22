@@ -1,0 +1,43 @@
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: dockerfile
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+
+  api:
+    build:
+      context: ./api
+      dockerfile: dockerfile
+    env_file:
+      - ./api/.env
+    depends_on:
+      - db
+    volumes:
+      - ./api:/app
+    ports:
+      - '8000:8000'
+
+  client:
+    build:
+      context: ./client
+      dockerfile: dockerfile
+    env_file:
+      - ./client/.env
+    depends_on:
+      - api
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - '5173:5173'
+
+volumes:
+  postgres_data:
