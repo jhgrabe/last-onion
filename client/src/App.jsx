@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PantryPage from "./pages/PantryPage";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   return (
@@ -18,6 +19,14 @@ function App() {
         }
       />
       <Route path="/" element={<LoginPage />} />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute>
+            <FavoritesPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

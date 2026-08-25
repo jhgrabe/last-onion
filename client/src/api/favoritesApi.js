@@ -1,24 +1,20 @@
-/*
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem("access");
-  return { Authorization: `Bearer ${token}` };
-};
+import axiosClient from "./axiosClient";
 
 export const getFavorites = async () => {
-  const response = await axios.get(`${API_URL}/recipes/favorites/`, {
-    headers: getAuthHeader(),
-  });
+  const response = await axiosClient.get("/recipes/favorites/");
   return response.data;
 };
 
-export const addFavorite = async (recipe) => {
-  const response = await axios.post(`${API_URL}/recipes/favorites/`, recipe, {
-    headers: getAuthHeader(),
-  });
+export const addFavorite = async (favorite) => {
+  const response = await axiosClient.post("/recipes/favorites/", favorite);
   return response.data;
 };
-*/
+
+export const updateFavorite = async (id, favorite) => {
+  const response = await axiosClient.patch(`/recipes/favorites/${id}/`, favorite);
+  return response.data;
+};
+
+export const deleteFavorite = async (id) => {
+  await axiosClient.delete(`/recipes/favorites/${id}/`);
+};
