@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'accounts',
     'pantry',
+    'recipes',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
