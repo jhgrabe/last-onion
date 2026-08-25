@@ -43,3 +43,15 @@ class AuthTests(TestCase):
             "email": "d@test.com", "password": "wrongpass"
         })
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_me_requires_auth(self):
+        response = self.client.get("/api/auth/me/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_me_with_valid_token(self):
+        User.objects.create_user(email="e@test.com", password="pass1234")
+        login = self.client.post("/api/auth/login/", {"email": "e@test.com", "password": "pass1234"})
+        token = login.data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+        response = self.client.get("/api/auth/me/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

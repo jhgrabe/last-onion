@@ -92,15 +92,16 @@ WSGI_APPLICATION = 'api_proj.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+import os
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "last_onion_db",
-        'USER': "josh",
-        'PASSWORD': "password",
-        'HOST': "db",
-        'PORT': "5432",
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
 
