@@ -77,6 +77,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost",
+    "http://54.161.115.251",
 ]
 
 ROOT_URLCONF = 'api_proj.urls'
