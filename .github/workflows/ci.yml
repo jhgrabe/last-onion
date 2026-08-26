@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create env files
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> api/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> api/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> api/.env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> api/.env
+          echo "DEBUG=True" >> api/.env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> api/.env
+          echo "VITE_API_URL=http://localhost:8000/api" >> client/.env
+
+      - name: Build and start stack
+        run: docker compose up --build -d
+
+      - name: Wait for API to be ready
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:8000/api/auth/me/ && break
+            sleep 2
+          done
+
+      - name: Run Django tests
+        run: docker compose exec -T api python manage.py test
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+
+  cypress-tests:
+    runs-on: ubuntu-latest
+    needs: backend-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create env files
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> api/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> api/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> api/.env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> api/.env
+          echo "DEBUG=True" >> api/.env
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> api/.env
+          echo "VITE_API_URL=http://localhost:8000/api" >> client/.env
+
+      - name: Build and start stack
+        run: docker compose up --build -d
+
+      - name: Wait for client to be ready
+        run: |
+          for i in {1..30}; do
+            curl -s http://localhost:5173 && break
+            sleep 2
+          done
+
+      - name: Install Cypress
+        working-directory: ./client
+        run: npm install
+
+      - name: Run Cypress
+        working-directory: ./client
+        run: npx cypress run
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: client/cypress/screenshots
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
