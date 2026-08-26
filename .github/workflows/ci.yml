@@ -23,6 +23,7 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> api/.env
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> api/.env
           echo "DEBUG=True" >> api/.env
+          echo "ALLOWED_HOSTS=localhost,127.0.0.1" >> api/.env
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> api/.env
           echo "VITE_API_URL=http://localhost:8000/api" >> client/.env
 
