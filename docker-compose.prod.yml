@@ -1,0 +1,41 @@
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: dockerfile
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./api
+      dockerfile: dockerfile
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn api_proj.wsgi:application --bind 0.0.0.0:8000"
+    env_file:
+      - ./api/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/dockerfile
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
