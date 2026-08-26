@@ -1,17 +1,6 @@
-/*
-import axios from "axios";
+import axiosClient from "./axiosClient";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem("access");
-  return { Authorization: `Bearer ${token}` };
-};
-
-export const getSuggestions = async (pantryItems) => {
-  const response = await axios.post(`${API_URL}/recipes/suggest/`, { pantryItems }, {
-    headers: getAuthHeader(),
-  });
+export const getRecipeSuggestion = async () => {
+  const response = await axiosClient.post("/recipes/suggest/");
   return response.data;
 };
-*/

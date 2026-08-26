@@ -6,3 +6,5 @@ psycopg==3.3.4
 psycopg-binary==3.3.4
 sqlparse==0.6.0
 python-dotenv
+django-cors-headers
+google-genai
