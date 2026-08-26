@@ -54,6 +54,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Cypress
+        working-directory: ./client
+        run: npm install
+
       - name: Create env files
         run: |
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
@@ -76,10 +80,6 @@ jobs:
             curl -s http://localhost:5173 && break
             sleep 2
           done
-
-      - name: Install Cypress
-        working-directory: ./client
-        run: npm install
 
       - name: Run Cypress
         working-directory: ./client
