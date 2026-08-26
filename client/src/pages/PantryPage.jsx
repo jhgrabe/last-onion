@@ -20,7 +20,7 @@ function PantryPage() {
       setItems(data);
       setError(null);
     } catch (err) {
-      setError("Failed to load pantry items.");
+      setError(err.response?.data?.error || "Failed to load pantry items.");
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ function PantryPage() {
       setUnit("");
       loadItems();
     } catch (err) {
-      setError("Failed to add item.");
+      setError(err.response?.data?.error || "Failed to add item.");
     }
   };
 
@@ -44,7 +44,7 @@ function PantryPage() {
       await deletePantryItem(id);
       loadItems();
     } catch (err) {
-      setError("Failed to delete item.");
+      setError(err.response?.data?.error || "Failed to delete item.");
     }
   };
 

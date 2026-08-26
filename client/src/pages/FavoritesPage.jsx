@@ -17,7 +17,7 @@ function FavoritesPage() {
       setFavorites(data);
       setError(null);
     } catch (err) {
-      setError("Failed to load favorites.");
+      setError(err.response?.data?.error || "Failed to load favorites.");
     } finally {
       setLoading(false);
     }
@@ -28,7 +28,7 @@ function FavoritesPage() {
       await updateFavorite(id, { rating });
       loadFavorites();
     } catch (err) {
-      setError("Failed to update rating.");
+      setError(err.response?.data?.error || "Failed to update rating.");
     }
   };
 
@@ -37,7 +37,7 @@ function FavoritesPage() {
       await deleteFavorite(id);
       loadFavorites();
     } catch (err) {
-      setError("Failed to delete favorite.");
+      setError(err.response?.data?.error || "Failed to delete favorite.");
     }
   };
 
