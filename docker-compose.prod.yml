@@ -9,8 +9,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 2s
@@ -21,29 +19,23 @@ services:
     build:
       context: ./api
       dockerfile: dockerfile
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn api_proj.wsgi:application --bind 0.0.0.0:8000"
     env_file:
       - ./api/.env
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./api:/app
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
 
-  client:
+  nginx:
     build:
-      context: ./client
-      dockerfile: dockerfile
-    env_file:
-      - ./client/.env
+      context: .
+      dockerfile: nginx/dockerfile
     depends_on:
       - api
-    volumes:
-      - ./client:/app
-      - /app/node_modules
     ports:
-      - "5173:5173"
+      - "80:80"
 
 volumes:
   postgres_data:
